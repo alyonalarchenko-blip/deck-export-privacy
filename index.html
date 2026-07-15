@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Deck Export</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap');
+
+  :root {
+    --ink: #16181c;
+    --muted: #5a5f68;
+    --line: #e6e4df;
+    --paper: #faf9f6;
+    --accent: #2f5233;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 88px 24px 120px;
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+  }
+
+  .updated {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  h2 {
+    font-size: 19px;
+    font-weight: 600;
+    margin: 44px 0 12px;
+  }
+
+  p {
+    font-size: 16px;
+    color: #2b2e33;
+    margin: 0 0 16px;
+  }
+
+  ul {
+    margin: 0 0 16px;
+    padding-left: 20px;
+  }
+
+  li {
+    font-size: 16px;
+    color: #2b2e33;
+    margin-bottom: 8px;
+  }
+
+  strong { font-weight: 600; }
+
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+  .contact-box {
+    margin-top: 48px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .contact-box p { margin: 0; }
+
+  footer {
+    margin-top: 64px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Deck Export</div>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: July 15, 2026</p>
+
+  <p>
+    Deck Export ("the plugin") is a Figma plugin that exports selected frames to
+    Google Slides, PDF, and PPTX. This page explains what data the plugin accesses, how it is used,
+    and how it is stored.
+  </p>
+
+  <h2>What data we access</h2>
+  <p>To export your designs to Google Slides, the plugin requests permission to access:</p>
+  <ul>
+    <li><strong>Your Google account email address</strong> — used only to show you which account is connected.</li>
+    <li><strong>Google Slides</strong> — to create and populate a presentation with your exported frames.</li>
+    <li><strong>Google Drive</strong> — limited to the files the plugin itself creates, so the resulting presentation can be saved to your Drive.</li>
+  </ul>
+  <p>
+    The plugin does not access, read, or modify any other files in your Google Drive,
+    and does not read your Figma files beyond the frame(s) you explicitly select for export.
+  </p>
+
+  <h2>How authentication works</h2>
+  <p>
+    When you connect your Google account, sign-in happens directly through Google's
+    own OAuth screen — the plugin never sees or stores your Google password.
+  </p>
+  <p>
+    After you sign in, Google issues an access token. This token is held briefly by a
+    backend relay (a Cloudflare Worker) only long enough to hand it back to the Figma
+    plugin — typically a few seconds, and never longer than 10 minutes. After that
+    window, or once the plugin retrieves it, the token is deleted and cannot be
+    retrieved again.
+  </p>
+  <p>
+    Figma itself stores your session (so you don't have to reconnect every time) using
+    Figma's built-in <code>clientStorage</code>, which is scoped to your own machine and
+    account — not accessible to us or to anyone else.
+  </p>
+
+  <h2>What we don't do</h2>
+  <ul>
+    <li>We don't store your design content, exported images, or presentation contents on any server.</li>
+    <li>We don't sell, share, or use your data for advertising.</li>
+    <li>We don't track usage analytics tied to your identity.</li>
+    <li>We don't retain access or refresh tokens beyond what's needed to keep your session working — nothing is logged permanently.</li>
+  </ul>
+
+  <h2>Data retention</h2>
+  <p>
+    Authentication data passed through the backend relay is stored for a maximum of
+    10 minutes and is deleted immediately after use or upon expiry, whichever comes
+    first. No design files, exported assets, or presentation content ever pass through
+    or are stored on the backend — the export happens directly between Figma and
+    Google's APIs.
+  </p>
+
+  <h2>Third parties</h2>
+  <p>
+    The plugin communicates only with Google's official APIs (Slides, Drive, OAuth)
+    and its own backend relay. No other third-party services receive your data.
+  </p>
+
+  <h2>Revoking access</h2>
+  <p>
+    You can disconnect the plugin at any time from within Figma, or revoke its access
+    entirely from your
+    <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account permissions page</a>.
+  </p>
+
+  <h2>Changes to this policy</h2>
+  <p>
+    If this policy changes, the updated version will be posted at this same URL with a
+    new "last updated" date.
+  </p>
+
+  <div class="contact-box">
+    <p><strong>Questions?</strong> Contact: <a href="mailto:YOUR_EMAIL_HERE">YOUR_EMAIL_HERE</a></p>
+  </div>
+
+  <footer>
+    Deck Export is an independent plugin and is not affiliated with or endorsed by Figma, Inc. or Google LLC.
+  </footer>
+
+</div>
+</body>
+</html>
