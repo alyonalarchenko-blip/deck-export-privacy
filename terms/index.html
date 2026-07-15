@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Terms of Service — Deck Export</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap');
+
+  :root {
+    --ink: #16181c;
+    --muted: #5a5f68;
+    --line: #e6e4df;
+    --paper: #faf9f6;
+    --accent: #B32766;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 88px 24px 120px;
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0 0 8px;
+  }
+
+  .updated {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  h2 {
+    font-size: 19px;
+    font-weight: 600;
+    margin: 44px 0 12px;
+  }
+
+  p {
+    font-size: 16px;
+    color: #2b2e33;
+    margin: 0 0 16px;
+  }
+
+  ul {
+    margin: 0 0 16px;
+    padding-left: 20px;
+  }
+
+  li {
+    font-size: 16px;
+    color: #2b2e33;
+    margin-bottom: 8px;
+  }
+
+  strong { font-weight: 600; }
+
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+  .contact-box {
+    margin-top: 48px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  .contact-box p { margin: 0; }
+
+  footer {
+    margin-top: 64px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Deck Export</div>
+  <h1>Terms of Service</h1>
+  <p class="updated">Last updated: July 15, 2026</p>
+
+  <p>
+    These Terms of Service ("Terms") govern your use of Deck Export ("the plugin"),
+    a Figma plugin that exports selected frames to Google Slides, PDF, and PPTX.
+    By installing or using the plugin, you agree to these Terms.
+  </p>
+
+  <h2>What the plugin does</h2>
+  <p>
+    Deck Export lets you select frames in Figma and export them as a Google Slides
+    presentation, a PDF, or a PPTX file. To create a Google Slides presentation, the
+    plugin connects to your Google account through Google's own OAuth sign-in and
+    uses the Slides and Drive APIs on your behalf, scoped only to the files the
+    plugin itself creates.
+  </p>
+
+  <h2>Your responsibilities</h2>
+  <ul>
+    <li>You're responsible for the content of the Figma frames you choose to export.</li>
+    <li>You're responsible for keeping your own Google account secure — the plugin never sees or stores your password.</li>
+    <li>You agree not to use the plugin to violate Figma's or Google's own terms of service, or any applicable law.</li>
+  </ul>
+
+  <h2>No warranty</h2>
+  <p>
+    The plugin is provided <strong>"as is,"</strong> without warranty of any kind, express
+    or implied. Export quality can vary depending on the complexity of your Figma
+    file (custom fonts, effects, nested components) — while the plugin aims for a
+    faithful conversion, some visual differences between the original Figma frame
+    and the exported Slides/PDF/PPTX file may occur.
+  </p>
+
+  <h2>Limitation of liability</h2>
+  <p>
+    To the maximum extent permitted by law, the developer of Deck Export is not
+    liable for any indirect, incidental, or consequential damages arising from your
+    use of the plugin, including data loss, export errors, or issues with your
+    connected Google account.
+  </p>
+
+  <h2>Third-party services</h2>
+  <p>
+    The plugin relies on Google's Slides, Drive, and OAuth APIs, and on Figma's own
+    plugin platform. Your use of those services remains subject to
+    <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Google's Terms of Service</a>
+    and
+    <a href="https://www.figma.com/tos/" target="_blank" rel="noopener">Figma's Terms of Service</a>.
+    Deck Export is not responsible for outages, changes, or policy updates on Google's
+    or Figma's side that affect how the plugin works.
+  </p>
+
+  <h2>Changes to the plugin or these Terms</h2>
+  <p>
+    The plugin may be updated over time, and these Terms may change to reflect
+    those updates. Continuing to use the plugin after a change means you accept the
+    revised Terms. The current version will always be posted at this same URL.
+  </p>
+
+  <h2>Termination</h2>
+  <p>
+    You can stop using the plugin at any time by disconnecting your Google account
+    and/or removing the plugin from Figma. Access may also be revoked from your
+    <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account permissions page</a>.
+  </p>
+
+  <div class="contact-box">
+    <p><strong>Questions?</strong> Contact: <a href="mailto:alonalarchenko.design@gmail.com">alonalarchenko.design@gmail.com</a></p>
+  </div>
+
+  <footer>
+    Deck Export is an independent plugin and is not affiliated with or endorsed by Figma, Inc. or Google LLC.
+  </footer>
+
+</div>
+</body>
+</html>
