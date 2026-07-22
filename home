@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deck Export · Figma frames to editable slides</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cpath d='M0 32C0 14.3269 14.3269 0 32 0H96C113.673 0 128 14.3269 128 32V96C128 113.673 113.673 128 96 128H32C14.3269 128 0 113.673 0 96V32Z' fill='%23B32766'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink-1:#B82A68;
+    --pink-2:#D6316F;
+    --pink-3:#F0507D;
+    --pink-4:#F97A98;
+    --plum:#3D0F2C;
+    --ink:#1E0E19;
+    --ink-soft:#6E5763;
+    --paper:#FFFFFF;
+    --paper-2:#FCF1F5;
+    --line:rgba(30,14,25,0.10);
+    --white-70:rgba(255,255,255,0.75);
+    --radius:20px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Plus Jakarta Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    font-weight:800;
+    line-height:1.04;
+    margin:0;
+    letter-spacing:-0.02em;
+  }
+  p{margin:0;}
+  .wrap{max-width:1160px; margin:0 auto; padding:0 32px;}
+  section{padding:104px 0;}
+  @media(max-width:720px){section{padding:64px 0;}}
+
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--ink-soft);
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{content:""; width:6px;height:6px;border-radius:50%; background:var(--pink-2); display:inline-block;}
+  .eyebrow.on-dark{color:var(--white-70);}
+  .eyebrow.on-dark::before{background:#fff;}
+
+  .btn{
+    font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:15px;
+    border:none; cursor:pointer; border-radius:100px;
+    padding:14px 26px;
+    display:inline-flex; align-items:center; gap:8px;
+    text-decoration:none;
+  }
+  .btn-primary{background:var(--ink); color:#fff;}
+  .btn-primary:hover{background:var(--pink-2);}
+  .btn-white{background:#fff; color:var(--pink-1);}
+  .btn-white:hover{background:#ffe3ec;}
+  .btn-ghost-dark{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,0.45);}
+  .btn-ghost-dark:hover{border-color:#fff;}
+  .btn-ghost{background:transparent; color:var(--ink); border:1.5px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--ink);}
+
+  /* PILL badge, like reference screenshot */
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    background:#fff; color:var(--ink);
+    padding:9px 16px 9px 12px; border-radius:100px;
+    font-weight:700; font-size:14px;
+    box-shadow:0 10px 24px -12px rgba(0,0,0,0.35);
+  }
+  .pill svg{width:16px;height:16px; flex-shrink:0;}
+
+  /* NAV (sits inside gradient hero) */
+  nav{padding-top:26px; position:relative; z-index:5;}
+  nav .wrap{display:flex; align-items:center; justify-content:space-between;}
+  .logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:19px; color:#fff;}
+  .logo img{width:30px;height:30px;border-radius:8px; display:block;}
+  .navlinks{display:flex; gap:30px; align-items:center; font-size:14.5px; color:var(--white-70);}
+  .navlinks a{color:inherit; text-decoration:none;}
+  .navlinks a:hover{color:#fff;}
+
+  /* HERO + DEMO merged, gradient section */
+  .hero{
+    position:relative;
+    background:linear-gradient(165deg, var(--pink-1) 0%, var(--pink-2) 45%, var(--pink-3) 78%, var(--pink-4) 100%);
+    padding-bottom:0;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(60% 50% at 85% 0%, rgba(255,255,255,0.16), transparent 60%),
+      radial-gradient(50% 40% at 5% 100%, rgba(0,0,0,0.18), transparent 60%);
+    pointer-events:none;
+  }
+  .hero-inner{position:relative; z-index:2; padding-top:64px; text-align:center;}
+  h1.hero-title{
+    font-size:clamp(38px,5.4vw,64px);
+    color:#fff;
+    max-width:840px; margin:26px auto 0;
+  }
+  .hero-sub{
+    margin:22px auto 0; font-size:18px; line-height:1.55; color:var(--white-70);
+    max-width:520px;
+  }
+  .hero-cta{display:flex; align-items:center; justify-content:center; gap:16px; margin-top:34px; flex-wrap:wrap;}
+  .micro{font-size:13px; color:var(--white-70); font-family:'IBM Plex Mono',monospace;}
+
+  /* Demo mockup (video inside browser frame) with pills around it, echoing reference */
+  .demo-stage{
+    position:relative; z-index:2;
+    margin-top:56px; padding-bottom:70px;
+  }
+  .demo-frame-wrap{
+    max-width:900px; margin:0 auto; position:relative;
+  }
+  .top-pill-row{display:flex; justify-content:center; margin-bottom:18px;}
+  .browser-frame{
+    background:#fff; border-radius:18px; padding:10px;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,0.5);
+  }
+  .browser-bar{display:flex; gap:6px; padding:6px 8px 12px;}
+  .browser-bar span{width:9px;height:9px;border-radius:50%; background:#EADCE2;}
+  .browser-video{
+    border-radius:12px; overflow:hidden; background:var(--plum); aspect-ratio:16/9.6;
+  }
+  .browser-video video{width:100%; height:100%; object-fit:cover; display:block;}
+  .step-pill-row{
+    display:flex; justify-content:center; gap:34px; flex-wrap:wrap;
+    margin-top:30px;
+  }
+  .step-pill{display:flex; align-items:center; gap:8px; color:#fff; font-weight:700; font-size:14.5px;}
+  .step-pill svg{width:17px;height:17px;}
+  .arrow-sep{color:rgba(255,255,255,0.5); font-weight:400;}
+
+  /* giant wordmark, like reference "Deck Export" */
+  .wordmark{
+    position:relative; z-index:1;
+    text-align:center;
+    font-size:clamp(60px,14vw,180px);
+    font-weight:800; letter-spacing:-0.04em;
+    line-height:0.9;
+    background:linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.08));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    padding:0 0 46px;
+    user-select:none;
+  }
+
+  /* PROBLEM */
+  .problem-title{font-size:clamp(30px,4vw,44px); margin-top:14px; max-width:640px;}
+  .pain-grid{margin-top:46px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media(max-width:820px){.pain-grid{grid-template-columns:1fr;}}
+  .pain-card{background:var(--paper-2); border:1px solid var(--line); border-radius:16px; padding:28px 24px;}
+  .pain-num{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--pink-2); font-weight:500;}
+  .pain-card p{margin-top:14px; font-size:15.5px; line-height:1.55; color:var(--ink-soft);}
+  .transition-line{
+    margin-top:36px; font-size:19px; font-weight:700; max-width:640px;
+  }
+
+  /* SOLUTION */
+  .steps{margin-top:48px; display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+  @media(max-width:820px){.steps{grid-template-columns:1fr;}}
+  .step{background:#fff; border:1px solid var(--line); border-radius:18px; padding:30px 26px;}
+  .step-n{
+    width:40px;height:40px;border-radius:12px;
+    background:linear-gradient(135deg,var(--pink-1),var(--pink-3));
+    color:#fff; font-weight:800; font-size:16px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step h3{font-size:18.5px; margin-top:18px; font-weight:700;}
+  .step p{margin-top:10px; font-size:14.5px; color:var(--ink-soft); line-height:1.55;}
+  .solution-caption{margin-top:26px; font-size:14px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+
+  /* FEATURES */
+  .feat-grid{margin-top:48px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media(max-width:820px){.feat-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.feat-grid{grid-template-columns:1fr;}}
+  .feat{padding:26px 22px; border-radius:16px; background:var(--paper-2); border:1px solid var(--line);}
+  .feat-icon{
+    width:36px; height:36px; border-radius:10px;
+    background:linear-gradient(135deg,var(--pink-1),var(--pink-3)); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px;
+  }
+  .feat h3{font-size:16.5px; font-weight:700; margin-top:16px;}
+  .feat p{font-size:14px; color:var(--ink-soft); margin-top:8px; line-height:1.55;}
+
+  /* USE CASES */
+  .uc-grid{margin-top:46px; display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
+  @media(max-width:720px){.uc-grid{grid-template-columns:1fr;}}
+  .uc{display:flex; gap:16px; padding:24px; border-radius:16px; background:#fff; border:1px solid var(--line);}
+  .uc-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--pink-1);
+    border:1px solid rgba(216,49,111,0.3); border-radius:20px; padding:3px 10px;
+    height:fit-content; white-space:nowrap;
+  }
+  .uc p{font-size:14.5px; color:var(--ink-soft); line-height:1.55;}
+  .uc strong{color:var(--ink); font-weight:700;}
+  .todo-note{margin-top:22px; font-size:13px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; border-left:2px solid var(--pink-3); padding-left:12px;}
+
+  /* TESTIMONIALS - dark plum section */
+  .plum{background:var(--plum); color:#fff;}
+  .test-grid{margin-top:46px; display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+  @media(max-width:820px){.test-grid{grid-template-columns:1fr;}}
+  .test-card{background:rgba(255,255,255,0.05); border:1px dashed rgba(255,255,255,0.18); border-radius:16px; padding:26px; min-height:190px; display:flex; flex-direction:column; justify-content:space-between;}
+  .test-quote{font-size:16.5px; font-weight:500; color:#EADCE2; line-height:1.5;}
+  .test-meta{margin-top:20px; display:flex; align-items:center; gap:10px;}
+  .avatar{width:34px;height:34px;border-radius:50%; background:linear-gradient(135deg,var(--pink-1),var(--pink-4));}
+  .test-meta .name{font-size:13.5px; color:#fff; font-weight:700;}
+  .test-meta .role{font-size:12px; color:rgba(255,255,255,0.5);}
+  .stat-row{margin-top:40px; display:flex; gap:48px; flex-wrap:wrap;}
+  .stat b{display:block; font-size:36px; font-weight:800; color:var(--pink-4);}
+  .stat span{font-size:12.5px; color:rgba(255,255,255,0.5); font-family:'IBM Plex Mono',monospace;}
+
+  /* PRICING */
+  .price-grid{margin-top:48px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media(max-width:860px){.price-grid{grid-template-columns:1fr;}}
+  .price-card{background:#fff; border:1px solid var(--line); border-radius:20px; padding:32px 26px; display:flex; flex-direction:column;}
+  .price-card.pro{border:2px solid var(--pink-2); position:relative; background:linear-gradient(180deg,#fff, var(--paper-2));}
+  .price-card.pro::before{
+    content:"Most popular"; position:absolute; top:-13px; left:26px;
+    background:linear-gradient(135deg,var(--pink-1),var(--pink-3)); color:#fff; font-size:11px; font-family:'IBM Plex Mono',monospace;
+    padding:4px 10px; border-radius:20px;
+  }
+  .price-name{font-size:22px; font-weight:800;}
+  .price-for{font-size:13px; color:var(--ink-soft); margin-top:6px;}
+  .price-amount{font-size:38px; font-weight:800; margin-top:22px;}
+  .price-amount span{font-size:14px; font-weight:500; color:var(--ink-soft);}
+  .price-list{margin-top:20px; display:flex; flex-direction:column; gap:10px; flex:1;}
+  .price-list div{font-size:14px; color:var(--ink-soft); display:flex; gap:8px;}
+  .price-list div::before{content:"—"; color:var(--pink-2);}
+  .price-card .btn{margin-top:24px; justify-content:center;}
+  .price-note{margin-top:22px; font-size:13px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;}
+
+  /* COMPARISON */
+  .compare{margin-top:44px; border-radius:18px; overflow:hidden; border:1px solid var(--line); background:#fff;}
+  table{width:100%; border-collapse:collapse; font-size:14.5px;}
+  th,td{padding:18px 22px; text-align:left; border-bottom:1px solid var(--line);}
+  thead th{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); background:var(--paper-2);}
+  tbody tr:last-child td{border-bottom:none;}
+  td.without{color:var(--ink-soft);}
+  td.with{color:var(--pink-1); font-weight:700;}
+  th:first-child, td:first-child{color:var(--ink-soft); font-size:13.5px;}
+
+  /* FAQ */
+  .faq{margin-top:44px; display:flex; flex-direction:column; border-top:1px solid var(--line);}
+  .faq-item{border-bottom:1px solid var(--line); padding:22px 0; cursor:pointer;}
+  .faq-q{display:flex; justify-content:space-between; align-items:center; gap:20px; font-weight:700; font-size:15.5px;}
+  .faq-q .plus{color:var(--pink-2); font-size:20px; font-weight:800; transition:transform .2s;}
+  .faq-a{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+  .faq-a p{padding-top:14px; font-size:14.5px; color:var(--ink-soft); line-height:1.6; max-width:640px;}
+  .faq-item.open .faq-a{max-height:200px;}
+  .faq-item.open .plus{transform:rotate(45deg);}
+
+  /* FINAL CTA */
+  .final-cta{
+    background:linear-gradient(165deg, var(--pink-1), var(--pink-3));
+    color:#fff; border-radius:28px; padding:64px 48px; text-align:center; position:relative; overflow:hidden;
+  }
+  @media(max-width:640px){.final-cta{padding:44px 24px;}}
+  .final-cta h2{font-size:clamp(28px,4vw,42px); color:#fff;}
+  .final-cta p{margin-top:16px; color:var(--white-70); font-size:16px;}
+  .final-cta .hero-cta{justify-content:center; margin-top:30px;}
+
+  footer{padding:52px 0 40px; border-top:1px solid var(--line);}
+  .foot-grid{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;}
+  .foot-logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:18px;}
+  .foot-logo img{width:26px;height:26px;border-radius:7px;}
+  .foot-links{display:flex; gap:26px; font-size:13.5px; color:var(--ink-soft);}
+  .foot-links a{color:inherit; text-decoration:none;}
+  .foot-links a:hover{color:var(--ink);}
+  .foot-copy{font-size:12.5px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-top:20px;}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="deck-export-icon" viewBox="0 0 128 128">
+      <path d="M0 32C0 14.3269 14.3269 0 32 0H96C113.673 0 128 14.3269 128 32V96C128 113.673 113.673 128 96 128H32C14.3269 128 0 113.673 0 96V32Z" fill="url(#homeLogoGrad)"/>
+      <path d="M34.2179 31.6193C34.2179 26.859 38.0769 23 42.8371 23H105.758C110.518 23 114.377 26.859 114.377 31.6193V77.9477C114.377 82.708 110.518 86.567 105.758 86.567H42.8371C38.0769 86.567 34.2179 82.708 34.2179 77.9477V31.6193Z" fill="#FEFEFE"/>
+      <path d="M25.109 40.7282C25.109 35.968 28.968 32.109 33.7283 32.109H96.6488C101.409 32.109 105.268 35.9679 105.268 40.7282V87.0567C105.268 91.817 101.409 95.676 96.6488 95.676H33.7283C28.968 95.676 25.109 91.817 25.109 87.0567V40.7282Z" fill="#FEFEFE"/>
+      <path d="M16 49.8372C16 45.0769 19.859 41.218 24.6193 41.218H87.5398C92.3001 41.218 96.159 45.0769 96.159 49.8372V96.1657C96.159 100.926 92.3001 104.785 87.5398 104.785H24.6193C19.859 104.785 16 100.926 16 96.1657V49.8372Z" fill="#FEFEFE"/>
+      <path d="M21.1716 49.8372C21.1716 47.9331 22.7152 46.3895 24.6193 46.3895H87.5399C89.444 46.3895 90.9876 47.9331 90.9876 49.8372V84.9606C90.9876 86.8648 89.444 88.4083 87.5399 88.4083H24.6193C22.7152 88.4083 21.1716 86.8648 21.1716 84.9606V49.8372Z" fill="url(#homeLogoGrad2)"/>
+      <path d="M43.0591 62.5063L18.7942 88.3627C17.2448 90.0138 18.4155 92.718 20.6798 92.718H72.219C74.5561 92.718 75.6941 89.8635 73.998 88.2556L46.7236 62.3993C45.6835 61.4132 44.0398 61.4613 43.0591 62.5063Z" fill="#83A882"/>
+      <defs>
+        <linearGradient id="homeLogoGrad" x1="64" y1="0" x2="7.5" y2="160" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FE5480"/><stop offset="1" stop-color="#B32766"/>
+        </linearGradient>
+        <linearGradient id="homeLogoGrad2" x1="56" y1="46" x2="56" y2="88" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FFF3F6"/><stop offset="1" stop-color="#58B8FD"/>
+        </linearGradient>
+      </defs>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- HERO + DEMO -->
+<div class="hero">
+  <nav>
+    <div class="wrap">
+      <div class="logo"><svg viewBox="0 0 128 128" style="width:30px;height:30px;border-radius:8px;" aria-hidden="true"><use href="#deck-export-icon"/></svg>Deck Export</div>
+      <div class="navlinks">
+        <a href="#how">How it works</a>
+        <a href="#faq">FAQ</a>
+      </div>
+  </nav>
+
+  <div class="hero-inner wrap">
+    <div class="eyebrow on-dark">A plugin for Figma</div>
+    <h1 class="hero-title">From Figma to Google Slides in 30 seconds</h1>
+    <p class="hero-sub">Build your deck in your usual Figma template — export turns it into a fully editable slide deck. No screenshots, no manual rebuilding.</p>
+    <p class="micro" style="margin-top:16px;">Free · Works right inside Figma</p>
+  </div>
+
+  <div class="demo-stage wrap">
+    <div class="demo-frame-wrap">
+      <div class="top-pill-row">
+        <div class="pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/></svg>
+          Live demo
+        </div>
+      </div>
+      <div class="browser-frame">
+        <div class="browser-bar"><span></span><span></span><span></span></div>
+        <div class="browser-video">
+          <video autoplay muted loop playsinline poster="assets/deck-export-demo-poster.jpg">
+            <source src="assets/deck-export-demo.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div class="step-pill-row">
+        <div class="step-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#fff"><path d="M4 4l7 16 2-7 7-2z"/></svg>
+          Select frame
+        </div>
+        <span class="arrow-sep">→</span>
+        <div class="step-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#fff"><path d="M12 3v12M7 8l5-5 5 5M5 21h14"/></svg>
+          Export
+        </div>
+        <span class="arrow-sep">→</span>
+        <div class="step-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#fff"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+          Keep editing
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wordmark">Deck Export</div>
+</div>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="wrap">
+    <div class="eyebrow">Sound familiar?</div>
+    <h2 class="problem-title">Design lives in Figma. The client is waiting for a Google Slides deck.</h2>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-num">01</div>
+        <p>Design was built in Figma — but sales needs it in Google Slides, because that's where the deck actually goes to the client.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-num">02</div>
+        <p>Manual transfer means either screenshots (no longer editable) or rebuilding every slide by hand — an hour or more per deck.</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-num">03</div>
+        <p>Every last-minute edit means another cycle: rework it in Figma → transfer it by hand again.</p>
+      </div>
+    </div>
+    <p class="transition-line">We ran into this ourselves — so we built a tool that closes this gap in one click.</p>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section id="how" style="background:var(--paper-2);">
+  <div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2 style="font-size:clamp(28px,4vw,42px); margin-top:14px;">One plugin. Three steps.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">01</div>
+        <h3>Build your deck in Figma</h3>
+        <p>In your usual template, the way you always work — no new rules or structures.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">02</div>
+        <h3>Click export</h3>
+        <p>It automatically turns every frame/slide in Figma into a Google Slides slide.</p>
+      </div>
+      <div class="step">
+        <div class="step-n">03</div>
+        <h3>Get a ready-to-use deck</h3>
+        <p>Text, element placement, structure — all preserved. Anyone on the team can edit it further.</p>
+      </div>
+    </div>
+    <p class="solution-caption">No PDF exports, no screenshots, no "rebuild this by hand again."</p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Benefits</div>
+    <h2 style="font-size:clamp(26px,3.6vw,36px); margin-top:14px;">Built for teams, not for demos</h2>
+    <div class="feat-grid">
+      <div class="feat"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M13 2L4.09 12.11a1 1 0 00.76 1.65h4.94l-1.3 7.24L20.24 10.9a1 1 0 00-.76-1.65h-4.94L13 2z"/></svg></div><h3>Saves time</h3><p>What used to take an hour of manually rebuilding slides now takes seconds.</p></div>
+      <div class="feat"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg></div><h3>Keeps everything editable</h3><p>Unlike PDFs or screenshots, every element in Google Slides stays live and editable.</p></div>
+      <div class="feat"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>Works with your template</h3><p>No need to change your usual Figma workflow — export adapts to your frame structure.</p></div>
+      <div class="feat"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div><h3>Built for the whole team</h3><p>Sales, marketing, or anyone else gets the deck in a tool they already know how to use.</p></div>
+      <div class="feat"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 01-4 4H3"/></svg></div><h3>Fewer edit cycles</h3><p>Last-minute edits no longer mean repeating the manual transfer work.</p></div>
+      <div class="feat"><div class="feat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div><h3>One click, start to finish</h3><p>From a finished Figma frame to a ready Google Slides deck — no steps in between.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section style="background:var(--paper-2);">
+  <div class="wrap">
+    <div class="eyebrow">Who it's for</div>
+    <h2 style="font-size:clamp(26px,3.6vw,36px); margin-top:14px; max-width:640px;">Built for teams where design and sales work in different tools</h2>
+    <div class="uc-grid">
+      <div class="uc"><div class="uc-tag">sales</div><p><strong>Sales teams</strong> quickly personalize decks for clients — without depending on a designer or Figma access.</p></div>
+      <div class="uc"><div class="uc-tag">design ops</div><p><strong>Design teams</strong> get rid of repetitive, non-creative work of manually transferring slides.</p></div>
+      <div class="uc"><div class="uc-tag">marketing</div><p><strong>Marketing teams</strong> update decks themselves in Google Slides once the designer has built the base structure in Figma.</p></div>
+      <div class="uc"><div class="uc-tag">agency</div><p><strong>Agencies and consultancies</strong> quickly prepare client decks in a branded template that clients can then edit themselves.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section style="background:var(--paper-2);">
+  <div class="wrap">
+    <div class="eyebrow">Comparison</div>
+    <h2 style="font-size:clamp(26px,3.6vw,36px); margin-top:14px;">Without Deck Export vs. with Deck Export</h2>
+    <div class="compare">
+      <table>
+        <thead><tr><th></th><th>Without Deck Export</th><th>With Deck Export</th></tr></thead>
+        <tbody>
+          <tr><td>Time to transfer a deck</td><td class="without">30–60+ minutes of manual work</td><td class="with">~30 seconds</td></tr>
+          <tr><td>Editability of the result</td><td class="without">Lost (screenshots/PDF)</td><td class="with">Fully preserved</td></tr>
+          <tr><td>Who can make edits</td><td class="without">Only the designer in Figma</td><td class="with">Anyone in Google Slides</td></tr>
+          <tr><td>Last-minute edit cycle</td><td class="without">Repeated manual work</td><td class="with">One click — done</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="eyebrow">FAQ</div>
+    <h2 style="font-size:clamp(26px,3.6vw,36px); margin-top:14px;">Questions people actually ask</h2>
+    <div class="faq">
+      <div class="faq-item"><div class="faq-q">Do I need Figma access to view the result?<span class="plus">+</span></div><div class="faq-a"><p>No — the finished deck opens in regular Google Slides. Figma access is only needed at the build stage.</p></div></div>
+      <div class="faq-item"><div class="faq-q">Is formatting and element placement preserved?<span class="plus">+</span></div><div class="faq-a"><p>Yes, the structure of frames and elements is carried over exactly as it was built in the Figma template.</p></div></div>
+      <div class="faq-item"><div class="faq-q">Do I need to change how I normally work in Figma?<span class="plus">+</span></div><div class="faq-a"><p>No, Deck Export adapts to your existing template.</p></div></div>
+      <div class="faq-item"><div class="faq-q">Is there a free version?<span class="plus">+</span></div><div class="faq-a"><p>Deck Export is free to use.</p></div></div>
+      <div class="faq-item"><div class="faq-q">Can my whole team use it, not just me?<span class="plus">+</span></div><div class="faq-a"><p>Yes — anyone with the Figma frame can install the plugin and export it. There's no separate team account or seat limit.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-logo"><svg viewBox="0 0 128 128" style="width:26px;height:26px;border-radius:7px;" aria-hidden="true"><use href="#deck-export-icon"/></svg>Deck Export</div>
+      <div class="foot-links">
+        <a href="mailto:alonalarchenko.design@gmail.com">Support</a>
+        <a href="https://alyonalarchenko-blip.github.io/deck-export-privacy/">Privacy Policy</a>
+        <a href="https://alyonalarchenko-blip.github.io/deck-export-privacy/terms/">Terms of Service</a>
+      </div>
+    </div>
+    <div class="foot-copy">© 2026 Deck Export</div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    item.addEventListener('click',()=>{
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+      if(!wasOpen) item.classList.add('open');
+    });
+  });
+</script>
+
+</body>
+</html>
